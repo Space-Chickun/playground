@@ -1,0 +1,937 @@
+from textwrap import dedent
+from random import randint, choice
+from sys import exit
+import os
+
+### This will keep track of the player entering rooms. This will allow me to change the printed text upon reentry
+
+room_entered_before = []
+
+### Keeps track of the secrets the player has found in addition to random events observed
+
+secrets = 0
+random_events = []
+
+### This will allow me to force random encounters after a player has unlocked all the secrets!
+
+force_random = 0
+
+### This prefents people from typing in a secret word to constantly gain secret points
+
+no_secret_repeat = []
+
+### Class for the crew, rank names, crew
+
+class crew():
+    # List of information about the seals
+    def __init__(self, Number, Rank, Fname, Lname, Section, Health, Unique):
+        self.Number = Number
+        self.Rank = Rank
+        self.Fname = Fname
+        self.Lname = Lname
+        self.Section = Section
+        self.Health = Health
+        self.Unique = Unique
+
+### E1 Spaceman, E2 Spacemen Apprentice, E3 Senior Spaceman
+###         Rank and number
+### E1 E2 E3 E4 E5 01 02 E6 E7 O3 E8 O4 O5 E9 O6 O7 O8 O9 O10
+###  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
+### 1 = alive, 0 = dead
+
+###             Number  Rank                        FName       LName       Section             Health  Unique
+crew_all = [crew('a','a','a','a','a','a','a'),
+            crew(11,    "Senior Chief ",            "Pat",      "Actor",    "Engineering",      "1",    '1'),
+            crew(10,    "Lieutenant",               "Bo",       "Baron",    "Cyber",            "1",    '2'),
+            crew(11,    "Senior Chief",             "Derb",     "Pik",      "Supply",           "1",    '3'),
+            crew(8,     "Petty Officer 1st Class",  "Jo",       "Bethany",  "Engineering",      "1",    '4'),
+            crew(12,    "Lieutenant Commander",     "Chris",    "Squid",    "Cyber",            "1",    '5'),
+            crew(13,    "Commander",                "Lana",     "Cide",     "Command",          "1",    '6'),
+            crew(1,     "Spaceman",                 "Ninja",    "Potato",   "Supply",           "1",    '7'),
+            crew(11,    "Senior Chief",             "Erin",     "Duo",      "Cyber",            "1",    '8'),
+            crew(11,    "Senior Chief",             "Chris",    "Duo",      "Medical",          "1",    '9'),
+            crew(12,    "Lieutenant Commander",     "Myth",     "Laris",    "Engineering",      "1",    '10'),
+            crew(14,    "Master Chief",             "Wilson",   "Io",       "Command",          "1",    '11'),
+            crew(12,    "Lieutenant Commander",     "Sawn",     "McGinny",  "Armory",           "1",    '12'),
+            crew(12,    "Lieutenant Commander",     "Nathan",   "Spot",     "Operations",       "1",    '13'),
+            crew(12,    "Lieutenant Commander",     "Sarah",    "Cello",    "Medical",          "1",    '14'),
+            crew(12,    "Lieutenant Commander",     "Skoa",     "Twisted",  "Supply",           "1",    '15'),
+            crew(11,    "Senior Chief",             "Jonathan", "Jombo",    "Operations",       "1",    '16'),
+            crew(11,    "Senior Chief",             "Karina",   "Squirrel", "Armory",           "1",    '17'),
+            crew(5,     "Petty Officer 2nd Class",  "Achok",    "Mobster",  "Armory",           "1",    '18')
+            ]
+
+### This is the game timer
+
+turnschapter1 = 0
+
+def turns_chapter_one():
+    global turnschapter1
+    os.system('cls' if os.name=="nt" else 'clear')
+    turnschapter1 += 1
+    if turnschapter1 == 100:
+        print("Captain, please report to the bridge")
+    return
+
+### This sets up who can be in what part of the ship
+
+senior_crew = []
+junior_crew = []
+engineering_crew = []
+cyber_crew = []
+operations_crew = []
+armory_crew = []
+supply_crew = []
+medical_crew = []
+crew_in_senior_mess = []
+crew_in_senior_club = []
+crew_in_ten_fwd = []
+crew_in_torpedo_one = []
+crew_in_torpedo_two = []
+crew_in_torpedo_storage = []
+crew_in_medical = []
+crew_in_crew_mess = []
+crew_in_gym = []
+crew_in_armory = []
+crew_in_computer_room = []
+crew_in_surlight = []
+crew_in_sublight = []
+crew_in_docking = []
+crew_in_engineering = []
+crew_in_shuttle_bay = []
+
+crew_all_temp = []
+crew_all_temp == crew_all
+
+for c in crew_all:
+    if c.Health == 1:
+        if c.Number > 11:
+            senior_crew.append(c.Unique)
+        if c.Number < 12:
+            junior_crew.append(c.Unique)
+        if c.Section == 'Cyber':
+            cyber_crew.append(c.Unique)
+        if c.Section == 'Engineering':
+            engineering_crew.append(c.Unique)
+        if c.Section == 'Operations':
+            operations_crew.append(c.Unique)
+        if c.Section == 'Supply':
+            supply_crew.append(c.Unique)
+        if c.Section == 'Armory':
+            armory_crew.append(c.Unique)
+        if c.Section == 'Medical':
+            medical_crew.append(c.Unique)
+
+while len(crew_all_temp) > 0:
+    unplaced_crew = []
+    for c in crew_all_temp:
+        if c.Number > 11:
+            if randint(1,100) > 60:
+                if randint(1,2) == 2:
+                    crew_in_senior_club.append(c.Unique)
+                    crew_all_temp.remove(c)
+                else:
+                    crew_in_senior_mess.append(c.Unique)
+                    crew_all_temp.remove(c)
+        elif c.Section == 'Medical':
+            if randint(1,5) > 2:
+                crew_in_medical.append(c.Unique)
+                crew_all_temp.remove(c)
+            else:
+                unplaced_crew.append(c)
+                crew_all_temp.remove(c)
+        elif c.Section == 'Engineering':
+            placement = randint(1,10)
+            if placement >= 7:
+                crew_in_engineering.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement <= 3:
+                crew_in_sublight.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement == 5:
+                unplaced_crew.append(c)
+                crew_all_temp.remove(c)
+            else:
+                crew_in_surlight.append(c.Unique)
+                crew_all_temp.remove(c)
+        elif c.Section == 'Cyber':
+            placement = randint(1,10)
+            if placement >= 4:
+                crew_in_computer_room.append(c.Unique)
+                crew_all_temp.remove(c)
+            else:
+                unplaced_crew.append(c)
+                crew_all_temp.remove(c)
+        elif c.Section == 'Operations':
+            placement = randint(1,10)
+            if placement >= 7:
+                crew_in_docking.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement >= 3:
+                crew_in_shuttle_bay.append(c.Unique)
+                crew_all_temp.remove(c)
+            else:
+                unplaced_crew.append(c)
+                crew_all_temp.remove(c)
+        elif c.Section == 'Supply':
+            placement = randint(1,10)
+            if placement >= 6:
+                crew_in_shuttle_bay.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement >= 3:
+                crew_in_engineering.append(c.Unique)
+                crew_all_temp.remove(c)
+            else:
+                unplaced_crew.append(c)
+                crew_all_temp.remove(c)
+        elif c.Section == 'Armory':
+            placement = randint(1,10)
+            if placement >= 7:
+                crew_in_armory.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement >= 5:
+                crew_in_torpedo_one.append(c.Unique)
+                crew_all_temp.remove(c)
+            elif placement >= 3:
+                crew_in_torpedo_two.append(c.Unique)
+                crew_all_temp.remove(c)
+            else:
+                crew_in_torpedo_storage.append(c.Unique)
+                crew_all_temp.remove(c)
+
+### This sets up the scene class and is what is output if the scene only has 'pass' on it..
+
+class Scene(object):
+
+    def enter(self):
+        print("This scene is not yet configured.")
+        print("Subclass it and implement enter().")
+        exit(1)
+
+    def choose_next(self):
+        pass
+
+### How my game engine works. I need to understand this better
+
+class Engine(object):
+
+    def __init__(self, scene_map):
+        self.scene_map = scene_map
+
+    def play(self):
+        current_scene = self.scene_map.opening_scene()
+        last_scene = self.scene_map.next_scene('finished')
+
+        while current_scene != last_scene:
+            next_scene_name = current_scene.enter()
+            current_scene = self.scene_map.next_scene(next_scene_name)
+
+        current_scene.enter()
+
+### In case you die, a random one of these will play.
+
+class Death(Scene):
+    quips = [
+        "You died. Nice!",
+        "you died. Wow!",
+        "you died. Awesome!",
+        "you died. Amazing!",
+        "you died. Incredible!",
+        ""
+    ]
+
+    def enter(self):
+        print(Death.quips[randint(0, len(self.quips) - 1)])
+        exit(1)
+
+### first scene that shows up. Allows for input of secret code to force random encounters.
+
+class Introduction(Scene):
+    def enter(self):
+
+        print(dedent("""
+Welcome to Inter-Planetary Federation, or IPF for short. This is a text based adventure in which you are newly promoted 
+Captain Nate Chickun. You have been given command of your first ship, the IPF Roost, a medium scout ship. Your task for 
+this chapter is mundane, simply inspect the ship, then leave dry dock, but you can learn more about that once the game 
+actually starts.
+
+This game will list what options you can take in a numbered format. Simply type the number of the action you want to 
+take and then hit enter. Be aware, however, that each room has a secret action. This action is a word that can be typed 
+instead of a number. This action is not listed in your normal actions menu, but is hinted at in other actions in the 
+room or in similar rooms of the ship (such as the different mess halls.) Find all the secrets in each room to unlock a 
+bonus at the end of the game. 
+
+For now, though, lets starts!
+                """))
+
+        print(dedent("""
+                1. Start the game
+                """))
+
+        action = input("> ")
+
+        if action == '1':
+            os.system('cls' if os.name == "nt" else 'clear')
+            return 'captains_quarters'
+        elif action.lower() == 'space chickun':
+            force_random == 1
+            print(dedent("""
+                    All random encounters will now happen. Congratulations!
+                    """))
+            return 'captains_quarters'
+        else:
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'introduction'
+
+### Start of the actual game ### Secret
+
+class CaptainsQuarters(Scene):
+
+    def enter(self):
+
+        global secrets
+
+        if "CaptainsQuarters" not in room_entered_before:
+            print(dedent("""
+You wake up to the soft tones of your alarm, your first day as Captain and your first day in charge of the IPF Roost. 
+Getting up, you stretch and start to get ready for the day.
+                """))
+            room_entered_before.append("CaptainsQuarters")
+
+        else:
+            print(dedent("""
+                    You're back in your room.
+                    """))
+        print(dedent("""
+                What would you like to do?
+                
+                1. Read daily briefs
+                2. Have a drink
+                3. Get dressed and leave your room
+                
+                """))
+
+        action = input("> ")
+
+        if action == "1":
+            turns_chapter_one()
+            print(dedent("""
+Using a digital display, you scroll through the briefs, mentally taking note of what supplies still needed to  be loaded 
+from dry dock. It appears that most of the supplies are in, with the rest being done within the hour. Just enough time 
+to stroll through the ship, talk to the crew, check the systems yourself, and then head to the bridge to undock and 
+leave orbit.
+
+You toss the display back onto your desk, it landing on the display for your secret briefings.
+                 """))
+            return 'captains_quarters'
+
+        elif action == "2":
+            turns_chapter_one()
+            print(dedent("""
+Stretching away the night, you call out to the system to make you some oolong tea. As it finished pouring into your cup, 
+you sit down at your desk and start to drink it.
+                """))
+            return 'captains_quarters'
+
+        elif action == "3":
+            turns_chapter_one()
+            print(dedent("""
+You shower, enjoying the state of the art sonic shower as it's soft vibrations clean your body. Once clean,  you put 
+your uniform on, ensuring your Captain pips are aligned and in order.
+
+With one last glance across the room and at the mirror, you leave your room, stepping into the Senior Deck Hallway.
+"""))
+            return 'senior_hallway'
+
+        elif action.lower() == 'secret':
+            turns_chapter_one()
+            print(dedent("""
+CAPTAIN'S QUARTERS SECRET FOUND!
+
+As the captain of the ship, you get classified briefings regarding the goings on in the galaxy. Reading through your 
+departure brief, you learn that the Roxlande, a group of authoritarian rebels focused on the destruction of the IPF,
+have been spotted in the surrounding solar systems by the locals. You are to keep an eye out for them and be ready to 
+engage to defend the locals if the need comes.
+
+This would explain why your torpedo stores and armory are both being fully stocked, and your phase beam arrays are ready 
+to go a head of schedule. Hopefully your first flight as captain won't turn into a combat flight, but its always best to 
+be prepared for the worst.
+                    """))
+            if 'Captains_Quarters' not in no_secret_repeat:
+                secrets += 1
+                no_secret_repeat.append('Captains_Quarters')
+            return 'captains_quarters'
+
+        else:
+            os.system('cls' if os.name == "nt" else 'clear')
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'captains_quarters'
+
+class SeniorHallway(Scene):
+
+    def enter(self):
+        if "Senior_Hallway" not in room_entered_before:
+            senior_hallway_crew = randint(1, 5)
+            print(dedent("""
+You stand in the Senior Hallway. This hallway, mainly used by the senior staff of the ship, is attached to your 
+quarters, the Senior Mess, the Senior Club, the XO's quarters, and the elevator to the other decks. On the wall is a 
+schematic of the ship.
+                """))
+            room_entered_before.append("Senior_Hallway")
+            if senior_hallway_crew == 3 or force_random == 1:
+                print(dedent("""
+Commander Chris Squid is walking towards the elevator, having just left the mess hall. Commander Squid is the head of 
+the Cyber department, in charge of the ship's computer, and of defensive and offensive cyber actions.
+                    """))
+                random_events.append('Commander Chris Squid')
+        else:
+            print(dedent("""
+            The Senior Deck Hallway.
+            """))
+            senior_hallway_crew = 0
+        print(dedent("""
+                1. Enter your quarters
+                2. Enter XO's Quarters
+                3. Enter Senior Mess
+                4. Enter Senior Club
+                5. Enter the elevator
+                6. Read the schematic """))
+        if senior_hallway_crew == 3:
+            print(dedent("""7. Speak to Commander Squid"""))
+        action = input("> ")
+
+        if action == "1":
+            turns_chapter_one()
+            return 'captains_quarters'
+        if action == "2":
+            turns_chapter_one()
+            return 'xos_quarters_door'
+        if action == "3":
+            turns_chapter_one()
+            return 'senior_mess'
+        if action == "4":
+            turns_chapter_one()
+            return 'senior_club'
+        if action == "5":
+            turns_chapter_one()
+            return 'elevator'
+        if action == "6":
+            turns_chapter_one()
+            print(dedent("""
+You read the schematic.
+
+Senior Deck: Senior Crew Quarters, Senior Mess, Senior Club
+
+Main Deck: Crew Quarters, Crew Mess, Armory, Gym, Ten Forward, Medical
+
+Engineering Deck: Engineering, Computer Room, Docking Ports, Shuttle Bay, Torpedo Bays
+                    """))
+
+            return 'senior_hallway'
+
+        if action == "7" and senior_hallway_crew == 3:
+            turns_chapter_one()
+            print(dedent("""
+"Greetings Captain, enjoying your first day with four pips on your collar? You always tend to get promoted before me! As 
+per your order, I'll be doing a final check of all systems before you have us undock. I'm headed down to the Engineering
+deck right now." the shorter ginger Commander says. His uniform, while within regulations, shows a focus more on his 
+craft then on regulations, something that has endeared him to you over the years you have known him.
+
+"I'll be down later to check in with you and the crew, I know you have some new people to break in and teach the 
+ways." you reply. Most of your crew is new, as this is the maiden voyage.
+
+"You're right, Captain" he responds, with a slight emphasis on your new rank. "I'll see you shortly then." With that, he 
+makes his way to the elevator, enters it, and tells it 'Engineering Deck' as the doors slide shut.
+                """))
+            return 'senior_hallway'
+        else:
+            os.system('cls' if os.name == "nt" else 'clear')
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'senior_hallway'
+
+class XOsQuartersDoor(Scene):
+
+    def enter(self):
+        if 'XOs_Quarters' not in room_entered_before:
+            if 'xo_quarters_unlocked' not in room_entered_before:
+                print(dedent("""
+As you approach the XO's door, it chimes to alert the  occupant of your arrival. The XO is on the bridge, preventing you 
+from going into his room. You are, however, the captain and can have the System force unlock it for you.
+                    """))
+            else:
+                print(dedent("""
+With the XO telling the system that you could go into her room, the doors slide open for you as soon as you step near 
+them.
+                    """))
+                room_entered_before.append('xos_quarters_unlocked')
+                return 'xos_quarters'
+        elif 'XOs_Quarters' in room_entered_before:
+            return 'xos_quarters'
+        else:
+            print(dedent("""
+The door is still locked. If you want, you can still force it open.
+                """))
+
+        print(dedent("""
+                1. Force the lock
+                2. Enter your quarters
+                3. Enter Senior Mess
+                4. Enter Senior Club
+                5. Enter the elevator
+                6. Read the schematic """))
+        action = input("> ")
+
+        if action == "1":
+            turns_chapter_one()
+            print(dedent("""
+"Computer, over ride door lock on the XO's door. Voice print code, Tango Whiskey One Five Tango Three Delta."
+
+The system chimes, "Acknowledged. Door unlocked." The door slides open, allowing entry into the XO's quarters.
+                """))
+            room_entered_before.append('xos_quarters_door')
+            return 'xos_quarters'
+        if action == "2":
+            turns_chapter_one()
+            return 'captains_quarters'
+        if action == "3":
+            turns_chapter_one()
+            return 'senior_mess'
+        if action == "4":
+            turns_chapter_one()
+            return 'senior_club'
+        if action == "5":
+            turns_chapter_one()
+            return 'elevator'
+        if action == "6":
+            turns_chapter_one()
+            print(dedent("""
+You read the schematic.
+
+Senior Deck: Senior Crew Quarters, Senior Mess, Senior Club
+
+Main Deck: Crew Quarters, Crew Mess, Armory, Gym, Ten Forward, Medical
+
+Engineering Deck: Engineering, Computer Room, Docking Ports, Shuttle Bay, Torpedo Bays
+                    """))
+            return 'senior_hallway'
+        else:
+            os.system('cls' if os.name == "nt" else 'clear')
+            print(dedent("DOES NOT COMPUTE!"))
+
+class XOsQuarters(Scene):
+
+    def enter(self):
+
+        global secrets
+
+        if 'XOs_Quarters' not in room_entered_before:
+            print(dedent("""
+"You stand in the room of Commander Lana Cide, your XO. The room is tidy, and full of plants from all forms of planets 
+in the IPF. Her desk has multiple pads of paper with her artwork covering it.
+                """))
+            room_entered_before.append('XOs_Quarters')
+        else:
+            print(dedent("""
+                You are back in your XO's quarters.
+                """))
+
+        print(dedent("""
+                What would you like to do?
+        
+                1. Check the Artwork
+                2. Check the plants
+                3. Leave the room
+                
+                """))
+
+        action = input("> ")
+
+        if action == "1":
+            turns_chapter_one()
+            print(dedent("""
+The paper on her desk has a small sampling of her artwork. Dragons made of the fruits from hundreds of planets, the 
+creatures of nightmare from countless civilizations, and small designs of educational material are all mixed in among 
+the incredible works. Each piece seems to be better, more detailed, and more creative then the last.
+                    """))
+            return 'xos_quarters'
+
+        elif action == "2":
+            turns_chapter_one()
+            print(dedent("""
+A large number of plants from dozens of different planets fill nearly every square inch of wall and surface. Fragrant
+aromas from their flowers and the moist dirt they reside in permeate the room.
+
+Some of the plants have vibrant green or blue flowers, some move and quiver as if a living being, while others are leafy 
+trunks and hard, wooden leaves. The field of botany has learned a lot from the exploration of space, and only a small 
+portion of it is shown here.
+                    """))
+            return 'xos_quarters'
+
+        elif action == "3":
+            turns_chapter_one()
+            return 'senior_hallway'
+
+        elif action.lower() == 'desk':
+            turns_chapter_one()
+            print(dedent("""
+XO'S QUARTERS SECRET FOUND!
+
+You dig through the desk, eventually finding a notepad with writing. It is written in your XO's handwriting.
+
+"The new captain has arrived. I hope he is better then the previous one. Give us our privacy, don't break into our room,
+and don't micromanage us. I know he's a new captain, and this is his first full command, so I expect some growing pains,
+but I hope it isn't to many of them.
+"""))
+
+            if 'XOs_Quarters' not in no_secret_repeat:
+                secrets += 1
+                no_secret_repeat.append('XOs_Quarters')
+            return 'xos_quarters'
+
+        else:
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'xos_quarters'
+
+class SeniorMess(Scene):
+
+    def enter(self):
+
+        if 'Senior_Mess' not in room_entered_before:
+            room_entered_before.append('Senior_Mess')
+            print(dedent("""
+The smells and sounds of the senior members of your staff eating and drinking together greets you. You have served with 
+almost none of them before, they are all new to you. The mess crew are busy preparing food and drinks, along with 
+cleaning up after the officers return to duty.
+                """))
+        else:
+            print(dedent("""
+Your senior staff continue to eat and drink, passing the time.
+                """))
+
+        print(dedent("""
+            What would you like to do?
+        
+            1. Speak to a crew member
+            2. Sit down and check the menu
+            3. Return to the Senior Hallway
+            """))
+
+        action = input("> ")
+
+        if action == '1':
+            turns_chapter_one()
+            dialog = randint(1,4)
+            if dialog == 1:
+                crew_talk = choice(crew_in_senior_mess)
+                print(crew_all[crew_talk].Fname)
+                print(dedent(""""""))
+
+            return 'senior_mess'
+        if action == '2':
+            turns_chapter_one()
+            print(dedent("""
+You take a seat at the Captain's Table, and a crew member quickly brings you a menu. 
+                """))
+
+            print(dedent("""
+                What would you like to eat or drink?
+                
+                1. Embubwahly - A meat and bread dish from Lalande IV
+                2. Jandla - A smooth, fragrant tea from Cygni III
+                3. Baked Chicken - A fowl baked with veggies from Earth
+                4. Hodlrigh - A potent alocholic drink from Kapteyn IX
+                """))
+
+            meal = input("> ")
+
+            if meal == '1':
+                print(dedent("""
+You order the Embubwahly. Hailing from Lalandee IV, this dish is stuffed full of seasoned meats, baked in their fats,
+and then lined with a rough, dense bread. Originally used with only the meat from animals native to Lalandee, chefs from
+around the universe now spend countless hours finding the perfect combination of multi-planetary meats to combine with 
+exotic herbs and spices.
+                    """))
+            elif meal == '2':
+                print(dedent("""
+You order the Jandla, and it is quickly brought out to you. The fragrant smell always seems to smell better when made 
+from actual Jandlarian leaves, even though the scientists say its exactly the same as any teas the system can replicate 
+you. You slowly sip the tea and watch the crew enjoying their meals.
+                    """))
+            elif meal == '3':
+                print(dedent("""
+Wanting something from Earth, you order the baked chicken. Soon it is delivered to you, still hot from the oven. On the 
+plate are two pieces of fresh bread and the chicken nestled in the assorted mix of veggies cooked in the animal's fat. 
+As you eat it, the spices from the cook bring you back to times growing up when your mother would make it for you.
+                """))
+            elif meal == '4':
+                print(dedent("""
+The mess attendant looks at you, suddenly nervous. "Sir, uh... you aren't supposed to drink on duty. We were told to 
+um... not serve any drinks to members of the crew who are on duty. Sir, I am sorry." 
+
+1. Order the attendant to bring you the drink anyways
+2. Do something else
+                    """))
+
+                drink = input("> ")
+                if drink == '1':
+                    print(dedent("""
+"Listen, spaceman, I know the rules for my own ship. You are going to go back into the kitchen and bring me a drink. If
+you don't do so, right now, I know of plenty of latrines that need cleaning and engine cells that need scrubbed."
+
+Nervous and scared, the crew member runs to the kitchen and returns a few minutes later carrying your drink. He is still
+very nervous looking. He quickly places your drink on the table, making sure not to spill any, before quickly runs back 
+into the kitchen.
+
+You slowly sip the drink, feeling the alcohol slowly start to work its way through your system.
+                        """))
+
+                if drink == '2':
+                    print(dedent("""
+"You're right, spaceman. Thank you. I always want to make sure that every member of my crew knows the regulations, and 
+that they can and should politely and professionally correct their crew mates. Thank you, for doing so. I'll just have a 
+tea for now."
+
+The crew member nods, releasing a sigh of relief, before leaving to shortly return with your tea.
+                        """))
+
+
+            return 'senior_mess'
+        if action == '3':
+            turns_chapter_one()
+            return 'senior_hallway'
+
+        else:
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'senior_mess'
+
+class SeniorClub(Scene):
+    def enter(self):
+
+        if 'Senior_Club' not in room_entered_before:
+            room_entered_before.append('Senior_Club')
+            print(dedent("""
+As you enter the club, you notice its mostly empty. The crew mostly focused on the final preparations before departing 
+dry dock later today, once you command it. Still, the crew attendants are here, mainly cleaning up and ensuring 
+everything is stocked.
+                """))
+        elif 'Senior_Club' in room_entered_before:
+            print(dedent("""
+You're back in the Senior Club. The only other people here are the workers, completing their final work before departure.
+                """))
+
+        print(dedent("""
+            1. Order a drink
+            2. Return to the Senior Hallway
+            """))
+
+        action = input("> ")
+
+        if action == '1':
+            turns_chapter_one()
+            print(dedent("""
+You walk to the bar and order a oolong tea from the waiter. Noticing you're the captain, he hand brews your tea instead 
+of having it replicated like most crew would get. After a few minutes, he hands you the brewed tea, and then returns to 
+cleaning.
+                """))
+            return 'senior_club'
+
+        elif action == '2':
+            turns_chapter_one()
+            return 'senior_hallway'
+
+        else:
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'senior_club'
+
+class Elevator(Scene):
+
+    def enter(self):
+        print(dedent("""
+            What floor would you like?
+            """))
+
+        print(dedent("""
+            1. Bridge
+            2. Senior Deck
+            3. Crew Deck
+            4. Engineering Deck
+            """))
+
+        action = input("> ")
+
+        if action == '1':
+            turns_chapter_one()
+            return 'bridge'
+        elif action == '2':
+            turns_chapter_one()
+            return 'senior_deck'
+        elif action == '3':
+            turns_chapter_one()
+            return 'main_hallway'
+        elif action == '4':
+            turns_chapter_one()
+            return 'engineering_deck'
+        else:
+            print(dedent("DOES NOT COMPUTE!"))
+            return 'elevator'
+
+
+class MainHallway(Scene):
+
+    def enter(self):
+        if 'main_hallways' not in room_entered_before:
+            print(dedent("""
+The main hallway extends before you. Crew members mill about, preparing to depart dry dock. The main hallway is the 
+central corridor of the ship, attached to the majority of the crew quarters, the crew mess hall, the ship's main gym, 
+the armory, and Ten Forward.
+                
+                """))
+            main_hallway_random_crew = randint(1,5)
+            if main_hallway_random_crew == '3':
+                print(dedent("""
+            Random event!
+                        """))
+
+        elif 'main_hallway' in room_entered_before:
+            print(dedent("""
+You are back in the main hallway. What would you like to do?
+            """))
+
+        print(dedent("""
+            1. Talk to crew members
+            2. Enter the Crew Mess
+            3. Enter Ten Forward
+            4. Enter the Armory
+            5. Enter the Gym
+            6. Enter the Elevator
+            """))
+
+        action = input("> ")
+
+        if action == '1':
+            turns_chapter_one()
+            return 'crew_quarters'
+        elif action == '2':
+            turns_chapter_one()
+            return 'crew_mess'
+        elif action == '3':
+            turns_chapter_one()
+            return 'ten_forward'
+        elif action == '4':
+            turns_chapter_one()
+            return 'armory'
+        elif action == '5':
+            turns_chapter_one()
+            return 'gym'
+        elif action == '6':
+            turns_chapter_one()
+            return 'elevator'
+        else:
+            print(dedent("""DOES NOT COMPUTE"""))
+            return 'main_hallway'
+
+class CrewQuarters(Scene):
+    pass
+#    def enter(self):
+
+
+class CrewMess(Scene):
+    pass
+
+class TenForward(Scene):
+    pass
+
+class Armory(Scene):
+    pass
+
+class Gym(Scene):
+    pass
+
+class EngineeringHallway(Scene):
+    pass
+
+class Engineering(Scene):
+    pass
+
+class SurlightDrive(Scene):
+    pass
+
+class ComputerRoom(Scene):
+    pass
+
+class DorsalPort(Scene):
+    pass
+
+class VentralPort(Scene):
+    pass
+
+class TorpedoBayOne(Scene):
+    pass
+
+class TorpedoBayTwo(Scene):
+    pass
+
+class TorpedoStorage(Scene):
+    pass
+
+class ShuttleBay(Scene):
+    pass
+
+class Bridge(Scene):
+    pass
+
+
+
+
+
+class Finished(Scene):
+
+    def enter(self):
+        print("You won! Good job.")
+        return 'finished'
+
+
+class Map(object):
+    scenes = {
+        'introduction': Introduction(),
+        'captains_quarters': CaptainsQuarters(),
+        'senior_hallway': SeniorHallway(),
+        'xos_quarters_door': XOsQuartersDoor(),
+        'xos_quarters': XOsQuarters(),
+        'senior_mess': SeniorMess(),
+        'senior_club': SeniorClub(),
+        'main_hallway': MainHallway(),
+        'crew_quarters': CrewQuarters(),
+        'ten_forward': TenForward(),
+        'armory': Armory(),
+        'gym': Gym(),
+        'engineering_hallway': EngineeringHallway(),
+        'engineering': Engineering(),
+        'surlight_drive': SurlightDrive(),
+        'computer_room': ComputerRoom(),
+        'dorsal_port': DorsalPort(),
+        'ventral_port': VentralPort(),
+        'torpedo_bay_one': TorpedoBayOne(),
+        'torpedo_bay_two': TorpedoBayTwo(),
+        'torpedo_storage': TorpedoStorage(),
+        'shuttle_bay': ShuttleBay(),
+        'bridge': Bridge(),
+        'death': Death(),
+        'finished': Finished(),
+        'elevator': Elevator()
+    }
+
+    def __init__(self, start_scene):
+        self.start_scene = start_scene
+
+    def next_scene(self, scene_name):
+        val = Map.scenes.get(scene_name)
+        return val
+
+    def opening_scene(self):
+        return self.next_scene(self.start_scene)
+
+
+a_map = Map('introduction')
+a_game = Engine(a_map)
+a_game.play()
