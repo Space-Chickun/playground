@@ -20,18 +20,21 @@ force_random = 0
 
 no_secret_repeat = []
 
+
 ### Class for the crew, rank names, crew
 
 class crew():
     # List of information about the seals
-    def __init__(self, Number, Rank, Fname, Lname, Section, Health, Unique):
-        self.Number = Number
+    def __init__(self, Number, Rank, Fname, Lname, Section, Health, Gender, Unique):
+        self.Number = int(Number)
         self.Rank = Rank
         self.Fname = Fname
         self.Lname = Lname
         self.Section = Section
         self.Health = Health
-        self.Unique = Unique
+        self.Gender = Gender
+        self.Unique = int(Unique)
+
 
 ### E1 Spaceman, E2 Spacemen Apprentice, E3 Senior Spaceman
 ###         Rank and number
@@ -40,38 +43,43 @@ class crew():
 ### 1 = alive, 0 = dead
 
 ###             Number  Rank                        FName       LName       Section             Health  Unique
-crew_all = [crew('a','a','a','a','a','a','a'),
-            crew(11,    "Senior Chief ",            "Pat",      "Actor",    "Engineering",      "1",    '1'),
-            crew(10,    "Lieutenant",               "Bo",       "Baron",    "Cyber",            "1",    '2'),
-            crew(11,    "Senior Chief",             "Derb",     "Pik",      "Supply",           "1",    '3'),
-            crew(8,     "Petty Officer 1st Class",  "Jo",       "Bethany",  "Engineering",      "1",    '4'),
-            crew(12,    "Lieutenant Commander",     "Chris",    "Squid",    "Cyber",            "1",    '5'),
-            crew(13,    "Commander",                "Lana",     "Cide",     "Command",          "1",    '6'),
-            crew(1,     "Spaceman",                 "Ninja",    "Potato",   "Supply",           "1",    '7'),
-            crew(11,    "Senior Chief",             "Erin",     "Duo",      "Cyber",            "1",    '8'),
-            crew(11,    "Senior Chief",             "Chris",    "Duo",      "Medical",          "1",    '9'),
-            crew(12,    "Lieutenant Commander",     "Myth",     "Laris",    "Engineering",      "1",    '10'),
-            crew(14,    "Master Chief",             "Wilson",   "Io",       "Command",          "1",    '11'),
-            crew(12,    "Lieutenant Commander",     "Sawn",     "McGinny",  "Armory",           "1",    '12'),
-            crew(12,    "Lieutenant Commander",     "Nathan",   "Spot",     "Operations",       "1",    '13'),
-            crew(12,    "Lieutenant Commander",     "Sarah",    "Cello",    "Medical",          "1",    '14'),
-            crew(12,    "Lieutenant Commander",     "Skoa",     "Twisted",  "Supply",           "1",    '15'),
-            crew(11,    "Senior Chief",             "Jonathan", "Jombo",    "Operations",       "1",    '16'),
-            crew(11,    "Senior Chief",             "Karina",   "Squirrel", "Armory",           "1",    '17'),
-            crew(5,     "Petty Officer 2nd Class",  "Achok",    "Mobster",  "Armory",           "1",    '18')
-            ]
+crew_all = [
+    crew(11, "Senior Chief ", "Pat", "Actor", "Engineering", "1", 'M', '1'),
+    crew(10, "Lieutenant", "Bo", "Baron", "Cyber", "1", 'M', '2'),
+    crew(11, "Senior Chief", "Derb", "Pik", "Supply", "1", 'M', '3'),
+    crew(8, "Petty Officer 1st Class", "Jo", "Bethany", "Engineering", "1", 'M', '4'),
+    crew(12, "Lieutenant Commander", "Chris", "Squid", "Cyber", "1", 'M', '5'),
+    crew(13, "Commander", "Lana", "Cide", "Command", "1", 'F', '6'),
+    crew(1, "Spaceman", "Ninja", "Potato", "Supply", "1", 'M', '7'),
+    crew(11, "Senior Chief", "Erin", "Duo", "Cyber", "1", 'M', '8'),
+    crew(11, "Senior Chief", "Chris", "Duo", "Medical", "1", 'F', '9'),
+    crew(12, "Lieutenant Commander", "Myth", "Laris", "Engineering", "1", 'T', '10'),
+    crew(14, "Master Chief", "Wilson", "Io", "Command", "1", 'F', '11'),
+    crew(12, "Lieutenant Commander", "Sawn", "McGinny", "Armory", "1", 'M', '12'),
+    crew(12, "Lieutenant Commander", "Nathan", "Spot", "Operations", "1", 'M', '13'),
+    crew(12, "Lieutenant Commander", "Sarah", "Cello", "Medical", "1", 'F', '14'),
+    crew(12, "Lieutenant Commander", "Skoa", "Twisted", "Supply", "1", 'F', '15'),
+    crew(11, "Senior Chief", "Jonathan", "Jombo", "Operations", "1", 'M', '16'),
+    crew(11, "Senior Chief", "Karina", "Squirrel", "Armory", "1", 'F', '17'),
+    crew(5, "Petty Officer 2nd Class", "Achok", "Mobster", "Armory", "1", 'M', '18'),
+    crew(8, "Petty Officer 1st Class", "Kubilay", "Prag", "Operations", "1", "M", '19'),
+    crew(10, "Lieutenant", "Raymond", "Drink", "Medical", "1", "M", '20'),
+    crew(8, "Petty Officer 1st Class", "Cela", "Don", "Supply", "1", "M", '21')
+]
 
 ### This is the game timer
 
 turnschapter1 = 0
 
+
 def turns_chapter_one():
     global turnschapter1
-    os.system('cls' if os.name=="nt" else 'clear')
+    os.system('cls' if os.name == "nt" else 'clear')
     turnschapter1 += 1
-    if turnschapter1 == 100:
+    if turnschapter1 >= 100:
         print("Captain, please report to the bridge")
     return
+
 
 ### This sets up who can be in what part of the ship
 
@@ -100,11 +108,14 @@ crew_in_docking = []
 crew_in_engineering = []
 crew_in_shuttle_bay = []
 
-crew_all_temp = []
-crew_all_temp == crew_all
+crew_all_temp = [None] * len(crew_all);
+for i in range(0, len(crew_all)):
+    crew_all_temp[i] = crew_all[i];
+
+ ### Sorts crew into job and rank specific arrays
 
 for c in crew_all:
-    if c.Health == 1:
+    if c.Health == '1':
         if c.Number > 11:
             senior_crew.append(c.Unique)
         if c.Number < 12:
@@ -126,22 +137,22 @@ while len(crew_all_temp) > 0:
     unplaced_crew = []
     for c in crew_all_temp:
         if c.Number > 11:
-            if randint(1,100) > 60:
-                if randint(1,2) == 2:
+            if randint(1, 100) > 40:
+                if randint(1, 2) == 2:
                     crew_in_senior_club.append(c.Unique)
                     crew_all_temp.remove(c)
                 else:
                     crew_in_senior_mess.append(c.Unique)
                     crew_all_temp.remove(c)
         elif c.Section == 'Medical':
-            if randint(1,5) > 2:
+            if randint(1, 5) > 2:
                 crew_in_medical.append(c.Unique)
                 crew_all_temp.remove(c)
             else:
                 unplaced_crew.append(c)
                 crew_all_temp.remove(c)
         elif c.Section == 'Engineering':
-            placement = randint(1,10)
+            placement = randint(1, 10)
             if placement >= 7:
                 crew_in_engineering.append(c.Unique)
                 crew_all_temp.remove(c)
@@ -155,7 +166,7 @@ while len(crew_all_temp) > 0:
                 crew_in_surlight.append(c.Unique)
                 crew_all_temp.remove(c)
         elif c.Section == 'Cyber':
-            placement = randint(1,10)
+            placement = randint(1, 10)
             if placement >= 4:
                 crew_in_computer_room.append(c.Unique)
                 crew_all_temp.remove(c)
@@ -163,7 +174,7 @@ while len(crew_all_temp) > 0:
                 unplaced_crew.append(c)
                 crew_all_temp.remove(c)
         elif c.Section == 'Operations':
-            placement = randint(1,10)
+            placement = randint(1, 10)
             if placement >= 7:
                 crew_in_docking.append(c.Unique)
                 crew_all_temp.remove(c)
@@ -174,7 +185,7 @@ while len(crew_all_temp) > 0:
                 unplaced_crew.append(c)
                 crew_all_temp.remove(c)
         elif c.Section == 'Supply':
-            placement = randint(1,10)
+            placement = randint(1, 10)
             if placement >= 6:
                 crew_in_shuttle_bay.append(c.Unique)
                 crew_all_temp.remove(c)
@@ -185,7 +196,7 @@ while len(crew_all_temp) > 0:
                 unplaced_crew.append(c)
                 crew_all_temp.remove(c)
         elif c.Section == 'Armory':
-            placement = randint(1,10)
+            placement = randint(1, 10)
             if placement >= 7:
                 crew_in_armory.append(c.Unique)
                 crew_all_temp.remove(c)
@@ -211,6 +222,7 @@ class Scene(object):
     def choose_next(self):
         pass
 
+
 ### How my game engine works. I need to understand this better
 
 class Engine(object):
@@ -228,6 +240,7 @@ class Engine(object):
 
         current_scene.enter()
 
+
 ### In case you die, a random one of these will play.
 
 class Death(Scene):
@@ -244,10 +257,13 @@ class Death(Scene):
         print(Death.quips[randint(0, len(self.quips) - 1)])
         exit(1)
 
+
 ### first scene that shows up. Allows for input of secret code to force random encounters.
 
 class Introduction(Scene):
     def enter(self):
+
+        os.system('cls' if os.name == "nt" else 'clear')
 
         print(dedent("""
 Welcome to Inter-Planetary Federation, or IPF for short. This is a text based adventure in which you are newly promoted 
@@ -256,12 +272,12 @@ this chapter is mundane, simply inspect the ship, then leave dry dock, but you c
 actually starts.
 
 This game will list what options you can take in a numbered format. Simply type the number of the action you want to 
-take and then hit enter. Be aware, however, that each room has a secret action. This action is a word that can be typed 
-instead of a number. This action is not listed in your normal actions menu, but is hinted at in other actions in the 
-room or in similar rooms of the ship (such as the different mess halls.) Find all the secrets in each room to unlock a 
-bonus at the end of the game. 
+take and then hit enter. Be aware, however, that some rooms have a secret action. This action is a word that can be 
+typed instead of a number. This action is not listed in your normal actions menu, but is hinted at in other actions in 
+the room or in similar rooms of the ship (such as the different mess halls.) Find all the secrets in each room to unlock
+a bonus at the end of the game. 
 
-For now, though, lets starts!
+For now, though, lets start!
                 """))
 
         print(dedent("""
@@ -274,7 +290,9 @@ For now, though, lets starts!
             os.system('cls' if os.name == "nt" else 'clear')
             return 'captains_quarters'
         elif action.lower() == 'space chickun':
-            force_random == 1
+            global force_random
+            force_random = 1
+            os.system('cls' if os.name == "nt" else 'clear')
             print(dedent("""
                     All random encounters will now happen. Congratulations!
                     """))
@@ -282,6 +300,7 @@ For now, though, lets starts!
         else:
             print(dedent("DOES NOT COMPUTE!"))
             return 'introduction'
+
 
 ### Start of the actual game ### Secret
 
@@ -304,11 +323,11 @@ Getting up, you stretch and start to get ready for the day.
                     """))
         print(dedent("""
                 What would you like to do?
-                
+
                 1. Read daily briefs
                 2. Have a drink
                 3. Get dressed and leave your room
-                
+
                 """))
 
         action = input("> ")
@@ -367,9 +386,12 @@ be prepared for the worst.
             print(dedent("DOES NOT COMPUTE!"))
             return 'captains_quarters'
 
+
 class SeniorHallway(Scene):
 
     def enter(self):
+        global force_random
+        one_time_use = 0
         if "Senior_Hallway" not in room_entered_before:
             senior_hallway_crew = randint(1, 5)
             print(dedent("""
@@ -378,11 +400,12 @@ quarters, the Senior Mess, the Senior Club, the XO's quarters, and the elevator 
 schematic of the ship.
                 """))
             room_entered_before.append("Senior_Hallway")
-            if senior_hallway_crew == 3 or force_random == 1:
+            if force_random == 1 or senior_hallway_crew == 3:
                 print(dedent("""
 Commander Chris Squid is walking towards the elevator, having just left the mess hall. Commander Squid is the head of 
 the Cyber department, in charge of the ship's computer, and of defensive and offensive cyber actions.
                     """))
+                one_time_use = 1
                 random_events.append('Commander Chris Squid')
         else:
             print(dedent("""
@@ -396,7 +419,7 @@ the Cyber department, in charge of the ship's computer, and of defensive and off
                 4. Enter Senior Club
                 5. Enter the elevator
                 6. Read the schematic """))
-        if senior_hallway_crew == 3:
+        if senior_hallway_crew == 3 or one_time_use == 1:
             print(dedent("""7. Speak to Commander Squid"""))
         action = input("> ")
 
@@ -429,7 +452,7 @@ Engineering Deck: Engineering, Computer Room, Docking Ports, Shuttle Bay, Torped
 
             return 'senior_hallway'
 
-        if action == "7" and senior_hallway_crew == 3:
+        if action == "7" and senior_hallway_crew == 3 or one_time_use == 1:
             turns_chapter_one()
             print(dedent("""
 "Greetings Captain, enjoying your first day with four pips on your collar? You always tend to get promoted before me! As 
@@ -441,7 +464,7 @@ craft then on regulations, something that has endeared him to you over the years
 ways." you reply. Most of your crew is new, as this is the maiden voyage.
 
 "You're right, Captain" he responds, with a slight emphasis on your new rank. "I'll see you shortly then." With that, he 
-makes his way to the elevator, enters it, and tells it 'Engineering Deck' as the doors slide shut.
+makes his way to the elevator, and proceeds to the 'Engineering Deck' as the doors slide shut.
                 """))
             return 'senior_hallway'
         else:
@@ -449,13 +472,14 @@ makes his way to the elevator, enters it, and tells it 'Engineering Deck' as the
             print(dedent("DOES NOT COMPUTE!"))
             return 'senior_hallway'
 
+
 class XOsQuartersDoor(Scene):
 
     def enter(self):
         if 'XOs_Quarters' not in room_entered_before:
             if 'xo_quarters_unlocked' not in room_entered_before:
                 print(dedent("""
-As you approach the XO's door, it chimes to alert the  occupant of your arrival. The XO is on the bridge, preventing you 
+As you approach the XO's door, it chimes to alert the  occupant of your arrival. The XO is not in, preventing you 
 from going into his room. You are, however, the captain and can have the System force unlock it for you.
                     """))
             else:
@@ -518,6 +542,7 @@ Engineering Deck: Engineering, Computer Room, Docking Ports, Shuttle Bay, Torped
             os.system('cls' if os.name == "nt" else 'clear')
             print(dedent("DOES NOT COMPUTE!"))
 
+
 class XOsQuarters(Scene):
 
     def enter(self):
@@ -537,11 +562,11 @@ in the IPF. Her desk has multiple pads of paper with her artwork covering it.
 
         print(dedent("""
                 What would you like to do?
-        
+
                 1. Check the Artwork
                 2. Check the plants
                 3. Leave the room
-                
+
                 """))
 
         action = input("> ")
@@ -592,6 +617,7 @@ but I hope it isn't to many of them.
             print(dedent("DOES NOT COMPUTE!"))
             return 'xos_quarters'
 
+
 class SeniorMess(Scene):
 
     def enter(self):
@@ -610,7 +636,7 @@ Your senior staff continue to eat and drink, passing the time.
 
         print(dedent("""
             What would you like to do?
-        
+
             1. Speak to a crew member
             2. Sit down and check the menu
             3. Return to the Senior Hallway
@@ -620,12 +646,42 @@ Your senior staff continue to eat and drink, passing the time.
 
         if action == '1':
             turns_chapter_one()
-            dialog = randint(1,4)
-            if dialog == 1:
-                crew_talk = choice(crew_in_senior_mess)
-                print(crew_all[crew_talk].Fname)
-                print(dedent(""""""))
+            if len(crew_in_senior_mess) > 0:
+                dialog = randint(1, 3)
+                crew_talk = int(choice(crew_in_senior_mess))
 
+### Used to better manage proper gender pronouns for all crew members ###
+
+                if crew_all[crew_talk].Gender == 'M':
+                    talk_he_she = 'he'
+                    talk_him_her = 'him'
+                    talk_his_her = 'his'
+                elif crew_all[crew_talk].Gender == 'F':
+                    talk_he_she = 'she'
+                    talk_him_her = 'her'
+                    talk_his_her = 'her'
+                else:
+                    talk_he_she = 'they'
+                    talk_him_her = 'them'
+                    talk_his_her = 'their'
+                if dialog == 1:
+                    print(dedent("""You approach """ + crew_all[crew_talk].Rank + ' ' + crew_all[crew_talk].Lname + ' ' +
+"""and ask how """ + talk_he_she + """ is doing. """ + str.capitalize(talk_he_she) + """ brings up the concerns facing 
+""" + crew_all[crew_talk].Section + """ due to all the new joins and the shakedown of a new ship."""))
+                    crew_in_senior_mess.remove(crew_talk)
+                if dialog == 2:
+                    print(dedent("""You see """ + crew_all[crew_talk].Rank + ' ' + crew_all[crew_talk].Lname + """ ordering 
+a drink and watching the dock workers out of the windows. """ + str.capitalize(talk_he_she) + """ seems lost in thought,
+but quickly notices and responds to your questions. """ + talk_he_she + """ speaks with you about how to best handle """
++ talk_his_her + """ section and the daily grind towards excellence."""))
+                    crew_in_senior_mess.remove(crew_talk)
+                if dialog == 3:
+                    print(dedent(crew_all[crew_talk].Rank + ' ' + crew_all[crew_talk].Lname) + """ is having a drink as 
+""" + talk_he_she + """ read through a report from """ + talk_his_her + """ section. When you approach, """ + talk_he_she +
+""" stands up and speaks to you, going over all of the issues, successes, and on going work in the report.""")
+                    crew_in_senior_mess.remove(crew_talk)
+            else:
+                print(dedent("""You have already spoken to all the crew members here."""))
             return 'senior_mess'
         if action == '2':
             turns_chapter_one()
@@ -635,7 +691,7 @@ You take a seat at the Captain's Table, and a crew member quickly brings you a m
 
             print(dedent("""
                 What would you like to eat or drink?
-                
+
                 1. Embubwahly - A meat and bread dish from Lalande IV
                 2. Jandla - A smooth, fragrant tea from Cygni III
                 3. Baked Chicken - A fowl baked with veggies from Earth
@@ -694,7 +750,6 @@ tea for now."
 The crew member nods, releasing a sigh of relief, before leaving to shortly return with your tea.
                         """))
 
-
             return 'senior_mess'
         if action == '3':
             turns_chapter_one()
@@ -703,6 +758,7 @@ The crew member nods, releasing a sigh of relief, before leaving to shortly retu
         else:
             print(dedent("DOES NOT COMPUTE!"))
             return 'senior_mess'
+
 
 class SeniorClub(Scene):
     def enter(self):
@@ -715,33 +771,73 @@ dry dock later today, once you command it. Still, the crew attendants are here, 
 everything is stocked.
                 """))
         elif 'Senior_Club' in room_entered_before:
-            print(dedent("""
-You're back in the Senior Club. The only other people here are the workers, completing their final work before departure.
-                """))
-
+            print(dedent("""You're back in the Senior Club. The only other people here are the workers, completing their 
+final work before departure."""))
         print(dedent("""
-            1. Order a drink
-            2. Return to the Senior Hallway
+            1. Speak to a crew member
+            2. Order a drink
+            3. Return to the Senior Hallway
             """))
 
         action = input("> ")
 
         if action == '1':
             turns_chapter_one()
+            if len(crew_in_senior_club) > 0:
+                crew_talk = int(choice(crew_in_senior_club))
+                if crew_all[crew_talk].Gender == 'M':
+                    talk_he_she = 'he'
+                    talk_him_her = 'him'
+                    talk_his_her = 'his'
+                elif crew_all[crew_talk].Gender == 'F':
+                    talk_he_she = 'she'
+                    talk_him_her = 'her'
+                    talk_his_her = 'her'
+                else:
+                    talk_he_she = 'they'
+                    talk_him_her = 'them'
+                    talk_his_her = 'their'
+                dialog = randint(1, 2)
+                if dialog == 1:
+                    crew_talk_club = randint(1,3)
+                    if crew_talk_club == 1:
+                        print(dedent("""As you approach """ + crew_all[crew_talk].Rank + ' ' + crew_all[crew_talk].Lname +
+""" you ask about the day and """ + talk_his_her + """ plans for the departure. The two of you spend a few minutes going
+over that and other niceties, before """ + talk_he_she + """ takes """ + talk_his_her + """ leave and returns to """ +
+talk_his_her + """ duty post for the day."""))
+                        crew_in_senior_club.remove(crew_talk)
+                        return 'senior_club'
+                    elif crew_talk_club == 2:
+                        print(dedent(crew_all[crew_talk].Rank + ' ' + crew_all[crew_talk].Lname + """ is ending """ +
+talk_his_her + """ night shift and enjoying a relaxing drink before heading to bed. The sight of Earth will be something
+no one sees for a few days, until the ship returns to dock."""))
+                        crew_in_senior_club.remove(crew_talk)
+                        return 'senior_club'
+                    else:
+                        print(dedent(("""The soft sounds of people chattering brings your attention to """ + crew_all[crew_talk].Rank
++ ' ' + crew_all[crew_talk].Lname + """ and the small personal display device in front of """ + talk_him_her + """. The 
+sounds stop as you approach, and """ + talk_he_she + """stand up to greet you. After pleasantries, you are treated to an
+impassioned talk about the plot, characters, and story of the animated show, paused on the display device. As the talk
+gets closer to the start of the second season, you politely, but firmly, break away from the conversation and continue
+your rounds.""")))
+                else:
+                    return 'senior_club'
+        elif action == '2':
+            turns_chapter_one()
             print(dedent("""
 You walk to the bar and order a oolong tea from the waiter. Noticing you're the captain, he hand brews your tea instead 
 of having it replicated like most crew would get. After a few minutes, he hands you the brewed tea, and then returns to 
 cleaning.
-                """))
+"""))
             return 'senior_club'
-
-        elif action == '2':
+        elif action == '3':
             turns_chapter_one()
             return 'senior_hallway'
 
         else:
             print(dedent("DOES NOT COMPUTE!"))
             return 'senior_club'
+
 
 class Elevator(Scene):
 
@@ -779,18 +875,25 @@ class Elevator(Scene):
 class MainHallway(Scene):
 
     def enter(self):
-        if 'main_hallways' not in room_entered_before:
+        one_time_use = 0
+        if 'main_hallway' not in room_entered_before:
+            room_entered_before.append('main_hallway')
             print(dedent("""
 The main hallway extends before you. Crew members mill about, preparing to depart dry dock. The main hallway is the 
 central corridor of the ship, attached to the majority of the crew quarters, the crew mess hall, the ship's main gym, 
 the armory, and Ten Forward.
-                
                 """))
-            main_hallway_random_crew = randint(1,5)
-            if main_hallway_random_crew == '3':
+            main_hallway_random_crew = randint(1, 5)
+            if main_hallway_random_crew == '3' or force_random == 1:
+                one_time_use = 1
                 print(dedent("""
-            Random event!
+Two male junior crew members are exiting a private room as you walk by. Blushing, they give a good morning as they walk 
+past you towards the crew mess and club, silently whispering to each other. It wasn't very long ago that inter-crew 
+relationships were forbidden aboard ships, but with more and more ships exploring the farthest reaches of the galaxy on 
+longer and longer voyages, times had changed. Now relationships were authorized among crew members of the same tier of 
+ranks and if the members were in different sections.
                         """))
+                random_events.append("Couple in Love")
 
         elif 'main_hallway' in room_entered_before:
             print(dedent("""
@@ -798,13 +901,14 @@ You are back in the main hallway. What would you like to do?
             """))
 
         print(dedent("""
-            1. Talk to crew members
+            1. Go to Crew Quarters
             2. Enter the Crew Mess
             3. Enter Ten Forward
             4. Enter the Armory
             5. Enter the Gym
-            6. Enter the Elevator
-            """))
+            6. Enter the Elevator"""))
+        if main_hallway_random_crew == 3 or force_random == 1 and one_time_use == 1:
+            print(dedent("""7. Learn about inter-crew relationship history"""))
 
         action = input("> ")
 
@@ -826,62 +930,151 @@ You are back in the main hallway. What would you like to do?
         elif action == '6':
             turns_chapter_one()
             return 'elevator'
+        elif action == '7':
+            turns_chapter_one()
+            print(dedent("""It wasn't that long ago that any relationships between crew members would run the risk of 
+putting your carrier at risk. However, this was recently changed after the length of ship deployments continued to 
+become longer and time back at home ports became shorter and shorter. As such, it didn't take to many of these longs
+deployments before crew members started accepting the risks relationships posed. The Federation soon saw that their
+attempts to stop relationships from blooming was never going to work, and instead decided to regulate it in order to 
+ensure good order and discipline. 
+
+The rules governing relationships now state that they must be between members of equal or near equal ranks and that no
+member of the relationship can work in the same section as any other member. In addition, the Captain has the authority
+to regulate or deny relationships if doing so is considered best for the good order and discipline of the ship."""))
+            return('main_hallway')
         else:
             print(dedent("""DOES NOT COMPUTE"""))
             return 'main_hallway'
 
+
 class CrewQuarters(Scene):
-    pass
-#    def enter(self):
+    def enter(self):
+        if 'Crew_Quarters' not in [room_entered_before]:
+            print(dedent("""As you enter the general population quarters section of your starship, the crew stops what 
+they are doing to stare at you in surprise. The hallways quickly clear out except for a few unlucky crew who seem nervous
+that their commanding officer is visiting their homes."""))
+            room_entered_before.append('Crew_Quarters')
+        else:
+            print(dedent("""You are standing in the Crew Quarters section."""))
 
+        print(dedent("""What would you like to do?
+    
+1. Speak to a crew member
+2. Check a crew member's quarters
+3. Go to the Crew Mess
+4. Go to Ten Forward
+5. Go to the Armory
+6. Go to the Gym
+7. Go to the elevator"""))
 
+        action = input(""">_""")
+
+        if action == '1':
+                turns_chapter_one()
+                print(dedent("""TEST!!!"""))
+                return 'crew_quarters'
+        elif action == '2':
+            turns_chapter_one()
+            rooms_checked = 0
+            if rooms_checked >= 3:
+                print(dedent("""You have checked a lot of rooms already, you should leave the finer details of room
+    cleaning to your crew members."""))
+                return(CrewQuarters)
+            room_to_check = randint(1,3)
+            if room_to_check == 1:
+                rooms_checked += 1
+                print(dedent("""You check the room. It is clean."""))
+                return(CrewQuarters)
+            elif room_to_check == 2:
+                rooms_checked += 1
+                print(dedent("""This room was not clean at all!"""))
+                return(CrewQuarters)
+            else:
+                rooms_checked += 1
+                print(dedent("""This room had a dead spider in it. What the hell."""))
+                return(CrewQuarters)
+        elif aciton == '3':
+            turns_chapter_one()
+            return(CrewMess)
+        elif action == '4':
+            turns_chapter_one()
+            return(TenForward)
+        elif action == '5':
+            turns_chapter_one()
+            return(Armory)
+        elif action == '6':
+            turns_chapter_one()
+            return(Gym)
+        elif action == '7':
+            return(Elevator)
+        else:
+            print(dedent("""DOES NOT COMPUTE!"""))
+            turns_chapter_one()
+            return(CrewQuarters)
 class CrewMess(Scene):
     pass
+
 
 class TenForward(Scene):
     pass
 
+
 class Armory(Scene):
-    pass
+    def enter(self):
+        if "Armory" not in room_entered_before:
+            print(dedent("""This is the armory. It holds all types of personnel combat equipment like rifles and body 
+armor. Currently, there are plasma pistols and rifles, older 'slug throwing' weapons, bladed hand to hand combat devices,
+and other means of attack or defending oneself."""))
+            room_entered_before.append("Armory")
+
 
 class Gym(Scene):
     pass
 
+
 class EngineeringHallway(Scene):
     pass
+
 
 class Engineering(Scene):
     pass
 
+
 class SurlightDrive(Scene):
     pass
+
 
 class ComputerRoom(Scene):
     pass
 
+
 class DorsalPort(Scene):
     pass
+
 
 class VentralPort(Scene):
     pass
 
+
 class TorpedoBayOne(Scene):
     pass
+
 
 class TorpedoBayTwo(Scene):
     pass
 
+
 class TorpedoStorage(Scene):
     pass
+
 
 class ShuttleBay(Scene):
     pass
 
+
 class Bridge(Scene):
     pass
-
-
-
 
 
 class Finished(Scene):
